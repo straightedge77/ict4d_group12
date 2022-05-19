@@ -1,29 +1,24 @@
-# wscs_assignment2 - RESTful microservices architectures bonus point implementation
+# web application - administrator system
 
 ## Code Introduction
-- main.py is used to connect front and back
-- init_db.py is used to initilize the database
-- schema.sql contains the structure of the url database
-- models.py contains the structure of the user database
-- templates/index.html html page for the shortner function
-- templates/stats.html html page for data exhibition
-- templates/edit.html html page for edit the data
-- templates/login.html html page for login
-- templates/signup.html html page for signup
+- main.py is used to create
+- templates/sell.html html page for the sell list exhibition
+- templates/sell_edit.html html page for edit sell list
+- templates/exchange.html html page for the exchange list exhibition
+- templates/exchange_edit.html html page for edit exchange list
+- templates/report.html html page for the report list exhibition
+- templates/report_edit.html html page for edit report list
 
 ## Prerequisites
 
 ```
 python==3.8(recommend creating virtual environment using conda)
 flask==2.0.3
-flask-jwt-extended==4.3.1
-flask-sqlalchemy==2.5.1
-werkzeug==2.0.3
-hashids==1.3.1
-sqlite==3.38.2
+flask-mysqldb==1.0.1
 ```
 
 ## Run
+We have a web site running on 47.100.193.194:9999
 ```
-flask run (open 127.0.0.1:5000 in browser)
+flask run -h 0.0.0.0 -p 9999
 ```
