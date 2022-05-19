@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<vxml version = "2.1" application="http://webhosting.voxeo.net/208150/www/root.vxml">
+
+<!-- end event-->
+<catch event="end"> 
+ <disconnect/> 
+</catch>
+
+<!-- main menu-->
+<menu id="menu_product" scope="dialog" dtmf="true">
+  <prompt>
+    <audio src="./select_recommend.wav">
+      <break time="1000"/>
+    </audio>
+  </prompt>
+  <choice next="#recommend"></choice>
+  <choice next="#weekly_report"></choice>
+  <choice event="end"></choice>
+</menu>
+
+<!-- confirmation form-->
+<menu id="recommend" scope="dialog" dtmf="true">
+     <prompt>
+       <audio src="./recommendation.wav">
+	 <break time="1000"/>
+       </audio>
+       <audio src="./recommend_finish.wav">
+	 <break time="1000"/>
+       </audio>
+</prompt>
+
+<!-- listed choices are enumerated in order, 1 for save, 2 for menu_product-->
+<choice next="#menu_product"></choice> <!--go to main form--> 
+<choice next="#recommend"></choice> <!--listen again--> 
+</menu>
+
+<!-- confirmation form-->
+<menu id="weekly_report" scope="dialog" dtmf="true">
+     <prompt>
+       <audio src="./week_report.wav">
+	 <break time="1000"/>
+       </audio>
+       <audio src="./recommend_finish.wav">
+	 <break time="1000"/>
+       </audio>
+</prompt>
+
+<!-- listed choices are enumerated in order, 1 for save, 2 for menu_product-->
+<choice next="#menu_product"></choice> <!--go to main form-->  
+<choice next="#weekly_report"></choice> <!--listen again-->        
+</menu>
+
+
+</vxml>

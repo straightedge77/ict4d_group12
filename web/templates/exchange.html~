@@ -1,0 +1,49 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h1>{% block title %} Exchange lists {% endblock %}
+  <div class="col-12 col-md-3">
+    <form action="{{ url_for('exchange_clear')}}"
+          method="POST">
+      <input type="submit" value="Clear"
+             class="btn btn-danger btn-sm">
+    </form>
+  </div>
+</h1>
+    <table class="table">
+        <thead>
+            <tr>
+            <th scope="col">#</th>
+            <th scope="col">Seed1</th>
+            <th scope="col">Seed2</th>
+	    <th scope="col">Edit</th>
+	    <th scope="col">Delete</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for exchange in exchanges %}
+                <tr>
+                    <th scope="row">{{ exchange['id'] }}</th>
+                    <td>{{ exchange['seed1'] }}</td>
+                    <td>{{ exchange['seed2'] }}</td>
+		    <td>
+		      <div class="col-12 col-md-3">
+                            <a class="btn btn-warning btn-sm"
+                            href="{{ url_for('exchange_edit', id=exchange['id']) }}">Edit</a>
+                        </div>
+		    </td>
+		    <td>
+		      <div class="col-12 col-md-3">
+                            <form action="{{ url_for('exchange_delete', id=exchange['id']) }}"
+                                method="POST">
+                                <input type="submit" value="Delete"
+                                    class="btn btn-danger btn-sm">
+                            </form>
+                        </div>
+		    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+{% endblock %}

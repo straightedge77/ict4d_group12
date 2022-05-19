@@ -1,0 +1,190 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<vxml version = "2.1" application="http://webhosting.voxeo.net/208150/www/root.vxml">
+
+<property name="inputmodes" value="dtmf"/> <!-- set input to DTMF-->
+
+<!-- set variables for wav paths and extension-->
+<var name="path" expr="'./'"/>
+<var name="ext" expr="'.wav'"/>
+
+<!-- event for product selection-->
+<catch event="bag_product_selected"> 
+<prompt>
+.
+</prompt>
+<assign name="seed" expr="_message"/>
+<assign name="seedwav" expr="path + _message + ext"/>
+<assign name="units" expr="'kilograms'"/>
+<goto next="#details"/>
+</catch>
+
+<!-- end event-->
+<catch event="end"> 
+ <disconnect/> 
+</catch>
+
+<!-- main menu-->
+<menu id="menu_product" scope="dialog">
+<prompt>
+<break time="1000"/>
+<audio src="./select_sell.wav">
+<break time="1000"/>
+</audio>
+</prompt>
+
+
+<!-- product list-->
+<prompt>
+<audio src="./seed_type.wav">
+<break time="1000"/>
+</audio>
+</prompt>
+
+<!-- comment -->
+<choice event="bag_product_selected" dtmf="1" message="Rice"></choice>
+<choice event="bag_product_selected" dtmf="2" message="Cotton"></choice>
+<choice event="bag_product_selected" dtmf="3" message="Sorghum"></choice>
+
+</menu>
+
+<!-- main form-->
+<form id="details">
+      <field name="form_weight" type="number">
+         <prompt>
+	 <audio src="./how_kilos.wav">
+	 	<break time="1000"/>
+	 </audio>
+	 <audio expr="seedwav">
+	 	<break time="1000"/>
+	 </audio>
+	 <audio src="./enter_weight.wav">
+	 	<break time="1000"/>
+	 </audio>
+         </prompt>
+   	<filled>
+ 	<assign name="weight" expr="form_weight"/>
+      </filled>
+
+      </field>
+
+      <field name="form_price" type="number"> 
+        <prompt>
+	  <audio src="./how_price.wav">
+	    <break time="1000"/>
+	  </audio>
+	  <value expr="weight"/>
+	  <audio src="./kilo_of.wav">
+	    <break time="1000"/>
+	  </audio>
+	  <audio expr="seedwav">
+	    <break time="1000"/>
+	  </audio>
+	  <audio src="./enter_price.wav">
+	    <break time="1000"/>
+	  </audio>
+     </prompt>
+     <filled>
+	<assign name="price" expr="form_price"/>
+      </filled>
+      </field>
+
+      <record name="seller" beep="true" maxtime="10s" finalsilence="4000ms" dtmfterm="true" type="audio/x-wav">
+	<prompt timeout="5s">
+	  <audio src="./record_name.wav">
+	    <break time="1000"/>
+	  </audio>
+	</prompt>
+	<noinput>
+	  <audio src="./try_again.wav">
+	    <break time="1000"/>
+	  </audio>
+	</noinput>
+      </record>
+
+      <record name="address" beep="true" maxtime="10s" finalsilence="4000ms" dtmfterm="true" type="audio/x-wav">
+	<prompt timeout="5s">
+	  <audio src="./record_add.wav">
+	    <break time="1000"/>
+	  </audio>
+	</prompt>
+	<noinput>
+	  <audio src="./try_again.wav">
+	    <break time="1000"/>
+	  </audio>
+	</noinput>
+      </record>
+
+      <record name="reference" beep="true" maxtime="10s" finalsilence="4000ms" dtmfterm="true" type="audio/x-wav">
+	<prompt timeout="5s">
+	  <audio src="./record_ref.wav">
+	    <break time="1000"/>
+	  </audio>
+	</prompt>
+	<noinput>
+	  <audio src="./try_again.wav">
+	    <break time="1000"/>
+	  </audio>
+	</noinput>
+      </record>
+
+      <filled>
+        <assign  name="application.address" expr="address"/> <!-- assign record to global variables-->
+        <assign  name="application.reference" expr="reference"/>
+        <goto next="#confirm"/>
+      </filled>
+
+</form>
+
+<!-- confirmation form-->
+<menu id="confirm" scope="dialog" dtmf="true">
+  <prompt>
+    <audio src="./create_add.wav">
+      <break time="1000"/>
+    </audio>
+    <value expr="weight"/>
+    <audio src="./kilo_of.wav">
+      <break time="1000"/>
+    </audio>
+    <audio expr="seedwav">
+      <break time="1000"/>
+    </audio>
+    <audio src="./for.wav">
+      <break time="1000"/>
+    </audio>
+    <value expr="price"/>.
+    <audio src="./confirm.wav">
+      <break time="1000"/>
+    </audio>
+  </prompt>
+
+<!-- listed choices are enumerated in order, 1 for save, 2 for menu_product-->
+<choice next="#submit_form"></choice> <!--go to "save" form--> 
+<choice next="#menu_product"></choice> <!--back to main form--> 
+</menu>
+
+<form id="submit_form">
+  <block>
+    <var  name="type" expr="'sell'"/>
+  <submit enctype="multipart/form-data" next="http://47.100.193.194/ict.php" namelist="type seed weight price address reference" method="post"/>
+  <goto next="#last"/> <!-- not reached, last code on php server -->
+  </block>
+</form>
+
+<!-- finish form-->
+<menu id="last" scope="dialog" dtmf="true">
+<prompt>
+  <audio src="./post_add.wav">
+    <break time="1000"/>
+  </audio>
+  <audio src="./another_add.wav">
+    <break time="1000"/>
+  </audio>
+  <audio src="./sell_finish.wav">
+    <break time="1000"/>
+  </audio>
+</prompt>
+<choice next="#menu_product"></choice>
+<choice event="end"></choice>
+</menu>
+
+</vxml>

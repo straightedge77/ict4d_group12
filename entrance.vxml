@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<vxml version = "2.1" application="http://webhosting.voxeo.net/208150/www/root.vxml">
+
+  <menu id="lang_select" scope="dialog" dtmf="true">
+    <prompt>
+      For English, press 1. For French, press 2.
+    </prompt>
+    <choice next='#switch_service'/>
+    <choice next='#switch_fr'/>
+  </menu>
+
+<menu id="switch_service" scope="dialog">
+      <!-- product list-->
+      <prompt>
+      <enumerate>
+      <break time="750"/>
+      To <value expr="_prompt"/>, Press <value expr="_dtmf"/>
+      </enumerate>
+      </prompt>
+      
+      <!-- comment -->
+      <choice next="./en_buy.vxml" dtmf="1"> Buy seeds</choice>
+      <choice next="./en_sell.vxml" dtmf="2"> Sell seeds</choice>
+      <choice next="./en_exchange.vxml" dtmf="3"> Exchange seeds</choice>
+      <choice next="./en_report.vxml" dtmf="4"> Report production</choice>
+      <choice next="./en_recommend.vxml" dtmf="5"> Recommend seeding plan</choice>
+      
+</menu>
+
+<menu id="switch_fr" scope="dialog" dtmf="true">
+  <prompt>
+  <audio src="./service_fr.wav">
+    <break time="1000"/>
+  </audio>
+  </prompt>
+  <choice next="./fr_buy.vxml"></choice>
+  <choice next="./fr_sell.vxml"></choice>
+  <choice next="./fr_exchange.vxml"></choice>
+  <choice next="./fr_report.vxml"></choice>
+  <choice next="./fr_recommend.vxml"></choice>
+</menu>
+
+</vxml>

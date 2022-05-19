@@ -1,0 +1,185 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<vxml version = "2.1" application="http://webhosting.voxeo.net/208150/www/root.vxml">
+
+<property name="inputmodes" value="dtmf"/> <!-- set input to DTMF-->
+
+<!-- event for product selection-->
+<catch event="bag_product_selected"> 
+<prompt>
+.
+</prompt>
+<assign name="seed" expr="_message"/>
+<assign name="units" expr="'kilograms'"/>
+<goto next="#details"/>
+</catch>
+
+<!-- end event-->
+<catch event="end"> 
+ <disconnect/> 
+</catch>
+
+<!-- main menu-->
+<menu id="menu_product" scope="dialog">
+<prompt>
+<break time="1000"/>
+Please select the type of the seeds you want to buy.
+</prompt>
+
+
+<!-- product list-->
+<prompt>
+<enumerate>
+<break time="1000"/>
+For <value expr="_prompt"/>, Press <value expr="_dtmf"/>
+</enumerate>
+</prompt>
+
+<!-- comment -->
+<choice event="bag_product_selected" dtmf="1" message="Rice">Rice</choice>
+<choice event="bag_product_selected" dtmf="2" message="Cotton">Cotton</choice>
+<choice event="bag_product_selected" dtmf="3" message="Sorghum">Sorghum</choice>
+
+</menu>
+
+<!-- main form-->
+<form id="details">
+      <field name="form_weight" type="number">
+         <prompt>
+            How many <value expr="units"/> of <value expr="seed"/>?
+		Enter the weight and press hash
+         </prompt>
+   	<filled>
+ 	<assign name="weight" expr="form_weight"/>
+      </filled>
+
+      </field>
+
+      <record name="reference" beep="true" maxtime="10s" finalsilence="4000ms" dtmfterm="true" type="audio/x-wav">
+	<prompt timeout="5s">
+	  Record your reference after the beep.
+	</prompt>
+	<noinput>
+	  I didn't hear anything, please try again.
+	</noinput>
+      </record>
+	
+<!-- "filled" event for form -->
+      <filled>
+  <goto next="#confirm"/>
+      </filled>
+
+   </form>
+
+<!-- confirmation form-->
+<menu id="confirm" scope="dialog" dtmf="true">
+     <prompt>
+       You are searching <value expr="weight"/> <value expr="units"/> of <value expr="seed"/>.
+       <break time="1000"/>
+To Confirm, Press 1
+<break time="1000"/>
+To Re-enter your offering, Press 2
+</prompt>
+
+<!-- listed choices are enumerated in order, 1 for save, 2 for menu_product-->
+<choice next="#last"></choice> <!--go to "save" form--> 
+<choice next="#menu_product"></choice> <!--back to main form--> 
+</menu>
+
+
+<form id="last" scope="dialog" dtmf="true">
+      <block>
+            <prompt>
+                  Here is a list of offers.
+                  <break time="500"/>
+                  Next offer, Press 1
+                  <break time="500"/>
+                  Previous offer, Press 2
+                  <break time="500"/>
+                  Select the offer and finish, Press 3
+                  <break time="500"/>
+            </prompt>
+            <goto next="#get_data"/>         
+      </block>
+</form>
+
+
+
+<var name="start_id" expr="0"/>
+<var name="data" expr="1"/> 
+<var name="recv_price"/> 
+<var name="recv_id"/> 
+<var name="recv_address"/> 
+<var name="recv_reference"/> 
+
+
+
+<form id="inc_id">
+      <block>
+          <assign name="start_id" expr="start_id+1"/>
+          <goto next="#get_data"/>         
+      </block>
+</form>
+
+<form id="dec_id">
+      <block>
+            <assign name="start_id" expr="start_id-1"/>
+            <goto next="#get_data"/>         
+      </block>
+</form>
+
+
+<form id="get_data">
+      <block>
+            <var name="type" expr="'buy'"/>     
+                  <data name="quote" src="http://47.100.193.194/ict.php" namelist="type seed weight start_id data"/> 
+            <script><![CDATA[
+                  recv_id = quote.documentElement.getElementsByTagNameNS("", "id").item(0).firstChild.data;
+            ]]></script>
+
+            <if cond="recv_id == -1">
+                  <assign name="start_id" expr="-1"/>
+                  <goto next="#inc_id"/>
+            <else/> <if cond="recv_id == -2">
+                        <goto next="#noresult"/>
+                  <else/>
+                        <script><![CDATA[
+                              recv_price = quote.documentElement.getElementsByTagNameNS("", "price").item(0).firstChild.data;
+                              recv_id = quote.documentElement.getElementsByTagNameNS("", "id").item(0).firstChild.data;
+                              recv_address = quote.documentElement.getElementsByTagNameNS("", "address").item(0).firstChild.data;
+                              recv_reference = quote.documentElement.getElementsByTagNameNS("", "reference").item(0).firstChild.data;
+                        ]]></script>      
+                        <goto next="#select_offer"/>
+                  </if>
+            </if>
+      </block>
+</form>
+
+<!-- finish form-->
+<menu id="select_offer" scope="dialog" dtmf="true">
+      <prompt>
+            This offer sells <value expr="seed"/> for <value expr="recv_price"/>.
+            <break time="500"/>
+            Reference <break time="500"/> 
+            <audio expr="recv_reference"/> <break time="500"/> 
+
+            Address <break time="500"/> 
+            <audio expr="recv_address"/> <break time="500"/> 
+      </prompt>
+<choice next="#inc_id"></choice>
+<choice next="#dec_id"></choice>
+<choice event="end"></choice>
+</menu>
+
+
+
+<form id="noresult">
+      <block>
+            <prompt>
+                  Your search does not match any offers.
+            </prompt>
+            <disconnect/> 
+      </block>
+</form>
+
+
+</vxml>

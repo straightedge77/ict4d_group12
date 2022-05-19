@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<vxml version = "2.1" application="http://webhosting.voxeo.net/208150/www/root.vxml">
+
+<property name="inputmodes" value="dtmf"/> <!-- set input to DTMF-->
+
+<!-- event for product selection-->
+<catch event="bag_product_selected"> 
+<prompt>
+.
+</prompt>
+<assign name="seed" expr="_message"/>
+<assign name="units" expr="'kilograms'"/>
+<goto next="#details"/>
+</catch>
+
+<!-- end event-->
+<catch event="end"> 
+ <disconnect/> 
+</catch>
+
+<!-- main menu-->
+<menu id="menu_product" scope="dialog">
+<prompt>
+<break time="1000"/>
+Please select the type of the seeds
+</prompt>
+
+
+<!-- product list-->
+<prompt>
+<enumerate>
+<break time="1000"/>
+For <value expr="_prompt"/>, Press <value expr="_dtmf"/>
+</enumerate>
+</prompt>
+
+<!-- comment -->
+<choice event="bag_product_selected" dtmf="1" message="Rice">Rice</choice>
+<choice event="bag_product_selected" dtmf="2" message="Cotton">Cotton</choice>
+<choice event="bag_product_selected" dtmf="3" message="Sorghum">Sorghum</choice>
+
+</menu>
+
+<!-- main form-->
+<form id="details">
+      <field name="form_weight" type="number">
+         <prompt>
+            How many <value expr="units"/> of <value expr="seed"/>?
+		Enter the weight and press hash
+         </prompt>
+   	<filled>
+ 	<assign name="weight" expr="form_weight"/>
+      </filled>
+
+      </field>
+ 
+      <field name="form_price" type="number"> 
+         <prompt>
+	How much do you want to sell your <value expr="weight"/> <value expr="units"/> of <value expr="seed"/>?
+	Enter the price and press hash
+     </prompt>
+     <filled>
+	<assign name="price" expr="form_price"/>
+      </filled>
+      </field>
+
+      <record name="address" beep="true" maxtime="10s" finalsilence="4000ms" dtmfterm="true" type="audio/x-wav">
+	<prompt timeout="5s">
+	  Record your address after the beep.
+	</prompt>
+	<noinput>
+	  I didn't hear anything, please try again.
+	</noinput>
+      </record>
+
+      <record name="reference" beep="true" maxtime="10s" finalsilence="4000ms" dtmfterm="true" type="audio/x-wav">
+	<prompt timeout="5s">
+	  Record your reference after the beep.
+	</prompt>
+	<noinput>
+	  I didn't hear anything, please try again.
+	</noinput>
+      </record>
+
+      <filled>
+        <assign  name="application.address" expr="address"/> <!-- assign record to global variables-->
+        <assign  name="application.reference" expr="reference"/>
+        <goto next="#confirm"/>
+      </filled>
+
+   </form>
+
+<!-- confirmation form-->
+<menu id="confirm" scope="dialog" dtmf="true">
+     <prompt>
+       You have created an add for <value expr="weight"/> <value expr="units"/> of <value expr="seed"/> for <value expr="price"/>.
+       <break time="1000"/>
+To Confirm, Press 1
+<break time="1000"/>
+To Re-enter your offering, Press 2
+</prompt>
+
+<!-- listed choices are enumerated in order, 1 for save, 2 for menu_product-->
+<choice next="#submit_form"></choice> <!--go to "save" form--> 
+<choice next="#menu_product"></choice> <!--back to main form--> 
+</menu>
+
+<form id="submit_form">
+  <block>
+    <var  name="type" expr="'sell'"/>
+  <submit enctype="multipart/form-data" next="http://47.100.193.194/ict.php" namelist="type seed weight price address reference" method="post"/>
+  <goto next="#last"/> <!-- not reached, last code on php server -->
+  </block>
+</form>
+
+<!-- finish form-->
+<menu id="last" scope="dialog" dtmf="true">
+<prompt>
+Your Add has been posted online
+<break time="1000"/>
+To Enter another add, Press 1
+<break time="1000"/>
+To Finish, Press 2
+</prompt>
+<choice next="#menu_product"></choice>
+<choice event="end"></choice>
+</menu>
+
+</vxml>

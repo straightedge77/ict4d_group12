@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<vxml version = "2.1" application="http://webhosting.voxeo.net/208150/www/root.vxml">
+
+<property name="inputmodes" value="dtmf"/> <!-- set input to DTMF-->
+
+<!-- end event-->
+<catch event="end"> 
+ <disconnect/> 
+</catch>
+
+<!-- main menu-->
+<menu id="menu_product" scope="dialog" dtmf="true">
+  <prompt>
+    Please select the type of report you want to listen.
+    <break time="500"/>
+    Listen recommendation, Press 1.
+    <break time="500"/>
+    Listen weekly report, Press 2.
+    <break time="500"/>
+    Back to main menu, Press 3.
+  </prompt>
+  <choice next="#recommend"></choice>
+  <choice next="#weekly_report"></choice>
+  <choice event="end"></choice>
+</menu>
+
+<!-- confirmation form-->
+<menu id="recommend" scope="dialog" dtmf="true">
+     <prompt>
+       You are listening the recommendation of sowing for this year. This is a demo.
+       <break time="1000"/>
+Back to menu, Press 1
+<break time="1000"/>
+Listen again, Press 2
+</prompt>
+
+<!-- listed choices are enumerated in order, 1 for save, 2 for menu_product-->
+<choice next="#menu_product"></choice> <!--go to main form--> 
+<choice next="#recommend"></choice> <!--listen again--> 
+</menu>
+
+
+<!-- confirmation form-->
+<menu id="weekly_report" scope="dialog" dtmf="true">
+     <prompt>
+       You are listening the selling report for this week. This is a demo.
+       <break time="1000"/>
+Back to menu, Press 1
+<break time="1000"/>
+Listen again, Press 2
+</prompt>
+
+<!-- listed choices are enumerated in order, 1 for save, 2 for menu_product-->
+<choice next="#menu_product"></choice> <!--go to main form-->  
+<choice next="#weekly_report"></choice> <!--listen again-->        
+</menu>
+
+
+</vxml>
+

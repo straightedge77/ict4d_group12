@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<vxml version="2.0">
+
+<!-- variables (shared between files in the system)-->
+
+<var name="lang"/>
+<var name="service"/>
+<var name="seed"/>
+<var name="weight"/>
+<var name="price"/>
+<var name="seller"/>
+<var name="address"/>
+<var name="reference"/>
+<var name="path"/>
+<var name="ext"/>
+</vxml>

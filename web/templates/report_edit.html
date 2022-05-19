@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h1>{% block title %} Edit report record {% endblock %}</h1>
+<form method="post">
+    
+    <div class="form-group">
+        <label for="seed">Seed</label>
+        <input type="text" name="seed" list="typelist" placeholder="New Seed type" class="form-control" value="{{request.form['content'] }}" autofocus>
+	<datalist id="typelist">
+	  <option>Rice</option>
+	  <option>Cotton</option>
+	  <option>Sorghum</option>
+	</datalist>
+        </input>
+    </div>
+    <div class="form-group">
+        <label for="weight">Weight</label>
+        <input type="text" name="weight"
+               placeholder="New Weight" class="form-control"
+               value="{{request.form['content'] }}"></input>
+    </div>
+    <div class="form-group">
+        <label for="price">Price</label>
+        <input type="text" name="price"
+               placeholder="New Price" class="form-control"
+               value="{{request.form['content'] }}"></input>
+    </div>
+    <div class="form-group">
+        <button type="submit" class="btn btn-primary">Submit</button>
+    </div>
+</form>
+{% endblock %}
